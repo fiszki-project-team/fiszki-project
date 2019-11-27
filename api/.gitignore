@@ -6,6 +6,7 @@ target/
 .mvn
 mvnw
 mwnw.cmd
+lombok.jar
 
 ### STS ###
 .apt_generated

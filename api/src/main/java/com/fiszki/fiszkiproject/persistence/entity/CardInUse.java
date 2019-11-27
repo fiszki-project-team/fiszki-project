@@ -3,8 +3,9 @@ package com.fiszki.fiszkiproject.persistence.entity;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fiszki.fiszkiproject.persistence.entity.common.AbstractEntity;
@@ -18,9 +19,13 @@ import lombok.Setter;
 @Table(name = "CARD_IN_USE")
 public class CardInUse extends AbstractEntity {
 	
-	@OneToOne
-	@JoinColumn(name = "CARD_ID", nullable = false)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "CARD_ID")
 	private Card card;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "LESSON_ID")
+	private Lesson lesson;
 	
 	private Number displayOrder;
 	
