@@ -27,7 +27,7 @@ public class CardInUse extends AbstractEntity {
 	@JoinColumn(name = "LESSON_ID")
 	private Lesson lesson;
 	
-	private Number displayOrder;
+	private Long displayOrder;
 	
 	@Enumerated(EnumType.STRING)
 	private CardStatus status;
