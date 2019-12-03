@@ -1,9 +1,11 @@
 package com.fiszki.fiszkiproject.dtos;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter @Setter
+@NoArgsConstructor
 public class UserBasicInfoDto {
 	
 	private Long id;
@@ -11,8 +13,6 @@ public class UserBasicInfoDto {
 	private String email;
 	
 	private String displayName;
-	
-	public UserBasicInfoDto() {}
 	
 	public UserBasicInfoDto(Long id, String email, String displayName) {
 		this.id = id;
