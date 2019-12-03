@@ -1,5 +1,7 @@
 package com.fiszki.fiszkiproject.controllers;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -16,7 +18,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -40,11 +44,15 @@ public class UserControllerTest {
 	  
 	@Test
 	public void usersEndpointShouldReturnOkWhenThereAreNoUsers() throws Exception {
-		when(userService.getAllUsers()).thenReturn(new ArrayList<UserBasicInfoDto>());
-		final ResultActions result = mockMvc.perform(get("/api/users"));
+		when(userService.getAllUsers())
+			.thenReturn(new ArrayList<UserBasicInfoDto>());
 		
-		result
-			.andExpect(status().isOk());
+		final MockHttpServletResponse response = mockMvc
+				.perform(get("/api/users"))
+				.andReturn().getResponse();
+		
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		assertThat(response.getContentAsString()).isEqualTo("[]");
 	}
 	
 	@Test
@@ -60,6 +68,7 @@ public class UserControllerTest {
 		result
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$", hasSize(3)))
 			.andExpect(jsonPath("$[0].id", is(12)))
 			.andExpect(jsonPath("$[1].id", is(121)))
 			.andExpect(jsonPath("$[2].id", is(456)))
@@ -71,15 +80,18 @@ public class UserControllerTest {
 	public void singleUserEndpointShouldReturnNullWhenUserDoesNotExists() throws Exception {
 		when(userService.getUserById(1L)).thenReturn(null);
 		
-		final ResultActions result = mockMvc.perform(get("/api/users/1"));
+		final MockHttpServletResponse response = mockMvc
+				.perform(get("/api/users/1"))
+				.andReturn().getResponse();
 		
-		result
-			.andExpect(status().isNoContent());
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
+		assertThat(response.getContentAsString()).isEmpty();
 	}
 	
 	@Test
 	public void singleUserEndpointShouldReturnValidUserData() throws Exception {
-		when(userService.getUserById(33L)).thenReturn(new UserBasicInfoDto(33L, "user33@test.com", "user_33"));
+		when(userService.getUserById(33L))
+			.thenReturn(new UserBasicInfoDto(33L, "user33@test.com", "user_33"));
 		
 		final ResultActions result = mockMvc.perform(get("/api/users/33"));
 		
