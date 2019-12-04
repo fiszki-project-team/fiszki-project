@@ -8,21 +8,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fiszki.fiszkiproject.dtos.UserBasicInfoDto;
+import com.fiszki.fiszkiproject.dtos.UserNameChangeDto;
+import com.fiszki.fiszkiproject.exceptions.common.ValidatorException;
 import com.fiszki.fiszkiproject.mappers.UserMapper;
 import com.fiszki.fiszkiproject.persistence.entity.User;
 import com.fiszki.fiszkiproject.repositories.UserRepository;
 import com.fiszki.fiszkiproject.services.UserService;
+import com.fiszki.fiszkiproject.validators.UserValidator;
 
 @Service
 public class UserServiceImpl implements UserService {
 	
 	private UserMapper mapper;
 	private UserRepository repository;
+	private UserValidator validator;
 	
 	@Autowired
-	public UserServiceImpl(UserMapper mapper, UserRepository repository) {
+	public UserServiceImpl(UserMapper mapper, 
+			UserRepository repository, UserValidator validator) {
 		this.mapper = mapper;
 		this.repository = repository;
+		this.validator = validator;
 	}
 
 	@Override
@@ -41,6 +47,23 @@ public class UserServiceImpl implements UserService {
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public boolean changeDisplayName(UserNameChangeDto dto) throws ValidatorException {
+		Optional<User> userOpt = repository.findById(dto.getId());
+		
+		if (userOpt.isPresent()) {
+			validator.validateDisplayName(dto.getDisplayName());
+			
+			User entity = userOpt.get();
+			entity.setDisplayName(dto.getDisplayName());
+			repository.save(entity);
+			
+			return true;
+		}
+		
+		return false;
 	}
 
 }

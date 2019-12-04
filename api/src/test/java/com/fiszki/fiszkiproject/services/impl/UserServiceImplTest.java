@@ -1,6 +1,7 @@
 package com.fiszki.fiszkiproject.services.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.fiszki.fiszkiproject.dtos.UserBasicInfoDto;
+import com.fiszki.fiszkiproject.dtos.UserNameChangeDto;
+import com.fiszki.fiszkiproject.exceptions.common.Errors;
+import com.fiszki.fiszkiproject.exceptions.common.ValidatorException;
 import com.fiszki.fiszkiproject.services.UserService;
 
 
@@ -45,6 +49,42 @@ public class UserServiceImplTest {
 		assertThat(user).isNull();
 	}
 	
+	@Test
+	public void shouldSuccessfullyChangeDisplayName() throws ValidatorException {
+		Long userId = 3L;
+		String newDisplayName = "validName";
+		UserNameChangeDto dto = new UserNameChangeDto(userId, newDisplayName);
+		UserBasicInfoDto beforeChange = userService.getUserById(userId);
+		
+		boolean result = userService.changeDisplayName(dto);
+		UserBasicInfoDto afterChange = userService.getUserById(userId);
+		
+		assertThat(result).isTrue();
+		assertThat(afterChange.getDisplayName()).isEqualTo(newDisplayName);
+		assertThat(afterChange.getDisplayName()).isNotEqualTo(beforeChange.getDisplayName());
+	}
+	
+	@Test
+	public void shouldReturnFalseWhenUserIdIsNotValid() throws ValidatorException {
+		Long userId = -1L;
+		String newDisplayName = "validName";
+		UserNameChangeDto dto = new UserNameChangeDto(userId, newDisplayName);
+		
+		boolean result = userService.changeDisplayName(dto);
+		
+		assertThat(result).isFalse();
+	}
+	
+	@Test
+	public void shouldThrowExceptionWhenNewNameIsInvalid() throws ValidatorException {
+		Long userId = 1L;
+		String newDisplayName = "r    ";
+		UserNameChangeDto dto = new UserNameChangeDto(userId, newDisplayName);
+		
+		assertThatThrownBy(() -> userService.changeDisplayName(dto))
+			.isInstanceOf(ValidatorException.class)
+			.hasMessage(Errors.DISPLAY_NAME_TOO_SHORT);
+	}
 	
 
 }
