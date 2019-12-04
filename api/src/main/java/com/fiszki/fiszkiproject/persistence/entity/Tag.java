@@ -8,6 +8,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 
 import com.fiszki.fiszkiproject.persistence.entity.common.AbstractEntity;
 
@@ -17,6 +18,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@NamedQuery(name = "Tag.findTagsByUserId", query = "SELECT tag FROM Tag tag WHERE tag.user.id = :id ORDER BY tag.displayName ASC")
 public class Tag extends AbstractEntity {
 
 	private String displayName;
