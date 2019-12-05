@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fiszki.fiszkiproject.dtos.ErrorMessageDto;
 import com.fiszki.fiszkiproject.dtos.UserBasicInfoDto;
 import com.fiszki.fiszkiproject.dtos.UserNameChangeDto;
+import com.fiszki.fiszkiproject.dtos.UserPasswordChangeDto;
+import com.fiszki.fiszkiproject.exceptions.UserValidatorException;
 import com.fiszki.fiszkiproject.exceptions.common.ValidatorException;
 import com.fiszki.fiszkiproject.services.UserService;
 
@@ -57,6 +59,27 @@ public class UserController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		} catch (ValidatorException e) {
 			ErrorMessageDto error = new ErrorMessageDto("UserValidatorException", e.getMessage());
+			
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PutMapping("/changePassword")
+	public ResponseEntity<?> changeUserPassword(@RequestBody UserPasswordChangeDto dto) {
+		try {	
+			if (userService.changePassword(dto)) {
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			}
+			
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		} catch (ValidatorException e) {
+			String type = "AuthValidatorException";
+			
+			if (e instanceof UserValidatorException) {
+				type = "UserValidatorException";
+			}
+			
+			ErrorMessageDto error = new ErrorMessageDto(type, e.getMessage());
 			
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}

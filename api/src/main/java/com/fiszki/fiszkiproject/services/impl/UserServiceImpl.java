@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.fiszki.fiszkiproject.dtos.UserBasicInfoDto;
 import com.fiszki.fiszkiproject.dtos.UserNameChangeDto;
+import com.fiszki.fiszkiproject.dtos.UserPasswordChangeDto;
 import com.fiszki.fiszkiproject.exceptions.common.ValidatorException;
 import com.fiszki.fiszkiproject.mappers.UserMapper;
 import com.fiszki.fiszkiproject.persistence.entity.User;
@@ -64,6 +65,30 @@ public class UserServiceImpl implements UserService {
 		}
 		
 		return false;
+	}
+
+	@Override
+	public boolean changePassword(UserPasswordChangeDto dto) throws ValidatorException {
+		Optional<User> userOpt = repository.findById(dto.getId());
+		
+		if (userOpt.isPresent()) {
+			validator.validatePassword(dto.getNewPassword());
+			
+			User entity = userOpt.get();
+			validator.comparePasswords(entity.getPassword(), dto.getOldPassword());
+			
+			entity.setPassword(encodePassword(dto.getNewPassword()));
+			repository.save(entity);
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private String encodePassword(String password) {
+		// TODO - to be implemented once auth section is up and running
+		return password;
 	}
 
 }

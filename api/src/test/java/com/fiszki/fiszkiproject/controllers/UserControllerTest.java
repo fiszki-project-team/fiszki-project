@@ -20,6 +20,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -33,6 +35,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fiszki.fiszkiproject.dtos.UserBasicInfoDto;
 import com.fiszki.fiszkiproject.dtos.UserNameChangeDto;
+import com.fiszki.fiszkiproject.dtos.UserPasswordChangeDto;
+import com.fiszki.fiszkiproject.exceptions.AuthValidatorException;
 import com.fiszki.fiszkiproject.exceptions.UserValidatorException;
 import com.fiszki.fiszkiproject.exceptions.common.Errors;
 import com.fiszki.fiszkiproject.services.UserService;
@@ -111,7 +115,7 @@ public class UserControllerTest {
 		}
 		
 		@Test
-		@DisplayName("should return correct json data when user exists")
+		@DisplayName("should return return correct json data when user exists")
 		public void singleUserEndpointShouldReturnValidUserData() throws Exception {
 			when(userService.getUserById(33L))
 				.thenReturn(new UserBasicInfoDto(33L, "user33@test.com", "user_33"));
@@ -141,7 +145,7 @@ public class UserControllerTest {
 		}
 		
 		@Test
-		@DisplayName("returns no content when success")
+		@DisplayName("should return no content when success")
 		public void changeDisplayNameEndpointShouldReturnNoContentWhenChangeWasOk() throws Exception {		
 			when(userService.changeDisplayName(any(UserNameChangeDto.class)))
 				.thenReturn(true);
@@ -156,7 +160,7 @@ public class UserControllerTest {
 		}
 		
 		@Test
-		@DisplayName("returns 404 when user does not exist")
+		@DisplayName("should return 404 when user does not exist")
 		public void changeDisplayNameEndpointShouldReturnNotFoundWhenInvalidUserId() throws Exception {	
 			when(userService.changeDisplayName(any(UserNameChangeDto.class)))
 				.thenReturn(false);
@@ -171,7 +175,7 @@ public class UserControllerTest {
 		}
 		
 		@Test
-		@DisplayName("returns 400 when invalid display name")
+		@DisplayName("should return 400 when invalid display name")
 		public void changeDisplayNameEndpointShouldReturnBadRequestWhenInvalidName() throws Exception {		
 			when(userService.changeDisplayName(any(UserNameChangeDto.class)))
 				.thenThrow(new UserValidatorException(Errors.DISPLAY_NAME_TOO_SHORT));
@@ -185,6 +189,103 @@ public class UserControllerTest {
 				.andExpect(status().isBadRequest());
 		}		
 		
+	}
+	
+	@Nested
+	@DisplayName("change password")
+	class ChangePasswordEndpoint {
+		
+		private UserPasswordChangeDto dto = new UserPasswordChangeDto(1L, "test", "validPass1");
+		private String jsonContent;
+		
+		@BeforeEach
+		void setUp() throws JsonProcessingException {
+			jsonContent = new ObjectMapper().writeValueAsString(dto);
+		}	
+		
+		@Test
+		@DisplayName("should return no content when success")
+		public void changeWhenValidData() throws Exception {		
+			when(userService.changePassword(any(UserPasswordChangeDto.class)))
+				.thenReturn(true);
+			
+			final ResultActions result = mockMvc
+					.perform(put("/api/users/changePassword")
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(jsonContent));
+			
+			result
+				.andExpect(status().isNoContent());
+		}		
+		
+		@Test
+		@DisplayName("should return 404 when user does not exist")
+		public void changeWhenInvalidId() throws Exception {		
+			when(userService.changePassword(any(UserPasswordChangeDto.class)))
+				.thenReturn(false);
+			
+			final ResultActions result = mockMvc
+					.perform(put("/api/users/changePassword")
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(jsonContent));
+			
+			result
+				.andExpect(status().isNotFound());
+		}	
+		
+		@Test
+		@DisplayName("should return 400 when invalid old password")
+		public void changeWhenInvalidOldPassword() throws Exception {		
+			when(userService.changePassword(any(UserPasswordChangeDto.class)))
+				.thenThrow(new AuthValidatorException(Errors.INVALID_PASSWORD));
+			
+			final ResultActions result = mockMvc
+					.perform(put("/api/users/changePassword")
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(jsonContent));
+			
+			result
+				.andExpect(status().isBadRequest());
+		}
+
+		@ParameterizedTest
+		@DisplayName("should return 400 and when invalid new password")
+		@ValueSource(strings = {Errors.PASSWORD_TOO_SHORT, 
+								Errors.PASSWORD_HAS_NO_CAPITAL_LETTERS, 
+								Errors.PASSWORD_HAS_NO_SPECIAL_CHARS})
+		public void changeWhenInvalidNewPassword(String error) throws Exception {		
+			when(userService.changePassword(any(UserPasswordChangeDto.class)))
+				.thenThrow(new UserValidatorException(error));
+			
+			final ResultActions result = mockMvc
+					.perform(put("/api/users/changePassword")
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(jsonContent));
+			
+			result
+				.andExpect(status().isBadRequest())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.type", is("UserValidatorException")))
+				.andExpect(jsonPath("$.message", is(error)));
+		}
+		
+		@Test
+		@DisplayName("should return 400 and when old password does not match")
+		public void changeWhenOldPasswordDoesNotMatch() throws Exception {		
+			when(userService.changePassword(any(UserPasswordChangeDto.class)))
+				.thenThrow(new AuthValidatorException(Errors.INVALID_PASSWORD));
+			
+			final ResultActions result = mockMvc
+					.perform(put("/api/users/changePassword")
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(jsonContent));
+			
+			result
+				.andExpect(status().isBadRequest())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.type", is("AuthValidatorException")))
+				.andExpect(jsonPath("$.message", is(Errors.INVALID_PASSWORD)));
+		}
 	}
 
 	
