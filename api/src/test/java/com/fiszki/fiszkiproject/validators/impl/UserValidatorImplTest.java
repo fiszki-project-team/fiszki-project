@@ -43,7 +43,7 @@ public class UserValidatorImplTest {
 			
 			assertThatThrownBy(() -> validator.validateDisplayName(displayName))
 				.isInstanceOf(ValidatorException.class)
-				.hasMessage(Errors.DISPLAY_NAME_TOO_SHORT);
+				.hasMessage(Errors.DISPLAY_NAME_TOO_SHORT.toString());
 		}
 		
 		@Test
@@ -53,7 +53,7 @@ public class UserValidatorImplTest {
 			
 			assertThatThrownBy(() -> validator.validateDisplayName(displayName))
 				.isInstanceOf(ValidatorException.class)
-				.hasMessage(Errors.DISPLAY_NAME_TOO_SHORT);
+				.hasMessage(Errors.DISPLAY_NAME_TOO_SHORT.toString());
 		}
 	}
 	
@@ -77,7 +77,7 @@ public class UserValidatorImplTest {
 			
 			assertThatThrownBy(() -> validator.validatePassword(password))
 				.isInstanceOf(UserValidatorException.class)
-				.hasMessage(Errors.PASSWORD_TOO_SHORT);
+				.hasMessage(Errors.PASSWORD_TOO_SHORT.toString());
 		}
 		
 		@Test
@@ -87,7 +87,7 @@ public class UserValidatorImplTest {
 			
 			assertThatThrownBy(() -> validator.validatePassword(password))
 				.isInstanceOf(UserValidatorException.class)
-				.hasMessage(Errors.PASSWORD_TOO_SHORT);
+				.hasMessage(Errors.PASSWORD_TOO_SHORT.toString());
 		}
 		
 		@ParameterizedTest
@@ -97,7 +97,7 @@ public class UserValidatorImplTest {
 			
 			assertThatThrownBy(() -> validator.validatePassword(password))
 				.isInstanceOf(UserValidatorException.class)
-				.hasMessage(Errors.PASSWORD_HAS_NO_CAPITAL_LETTERS);
+				.hasMessage(Errors.PASSWORD_HAS_NO_CAPITAL_LETTERS.toString());
 		}
 		
 		@Test
@@ -107,7 +107,7 @@ public class UserValidatorImplTest {
 			
 			assertThatThrownBy(() -> validator.validatePassword(password))
 				.isInstanceOf(UserValidatorException.class)
-				.hasMessage(Errors.PASSWORD_HAS_NO_SPECIAL_CHARS);
+				.hasMessage(Errors.PASSWORD_HAS_NO_SPECIAL_CHARS.toString());
 		}
 	}
 	

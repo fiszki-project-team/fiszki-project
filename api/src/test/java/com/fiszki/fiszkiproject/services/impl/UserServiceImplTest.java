@@ -112,7 +112,7 @@ public class UserServiceImplTest {
 			
 			assertThatThrownBy(() -> userService.changeDisplayName(dto))
 				.isInstanceOf(ValidatorException.class)
-				.hasMessage(Errors.DISPLAY_NAME_TOO_SHORT);
+				.hasMessage(Errors.DISPLAY_NAME_TOO_SHORT.toString());
 		}
 	}
 	
@@ -162,7 +162,7 @@ public class UserServiceImplTest {
 			
 			assertThatThrownBy(() -> userService.changePassword(dto))
 				.isInstanceOf(UserValidatorException.class)
-				.hasMessage(Errors.PASSWORD_HAS_NO_CAPITAL_LETTERS);
+				.hasMessage(Errors.PASSWORD_HAS_NO_CAPITAL_LETTERS.toString());
 		}
 		
 		@Test
@@ -174,7 +174,7 @@ public class UserServiceImplTest {
 			
 			assertThatThrownBy(() -> mockedService.changePassword(dto))
 				.isInstanceOf(AuthValidatorException.class)
-				.hasMessage(Errors.INVALID_PASSWORD);
+				.hasMessage(Errors.INVALID_PASSWORD.toString());
 		}
 		
 	}

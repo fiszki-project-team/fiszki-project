@@ -21,7 +21,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -250,10 +250,8 @@ public class UserControllerTest {
 
 		@ParameterizedTest
 		@DisplayName("should return 400 and when invalid new password")
-		@ValueSource(strings = {Errors.PASSWORD_TOO_SHORT, 
-								Errors.PASSWORD_HAS_NO_CAPITAL_LETTERS, 
-								Errors.PASSWORD_HAS_NO_SPECIAL_CHARS})
-		public void changeWhenInvalidNewPassword(String error) throws Exception {		
+		@EnumSource(Errors.class)
+		public void changeWhenInvalidNewPassword(Errors error) throws Exception {		
 			when(userService.changePassword(any(UserPasswordChangeDto.class)))
 				.thenThrow(new UserValidatorException(error));
 			
@@ -266,7 +264,7 @@ public class UserControllerTest {
 				.andExpect(status().isBadRequest())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.type", is("UserValidatorException")))
-				.andExpect(jsonPath("$.message", is(error)));
+				.andExpect(jsonPath("$.message", is(error.toString())));
 		}
 		
 		@Test
@@ -284,7 +282,7 @@ public class UserControllerTest {
 				.andExpect(status().isBadRequest())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.type", is("AuthValidatorException")))
-				.andExpect(jsonPath("$.message", is(Errors.INVALID_PASSWORD)));
+				.andExpect(jsonPath("$.message", is(Errors.INVALID_PASSWORD.toString())));
 		}
 	}
 
