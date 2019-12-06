@@ -6,4 +6,5 @@ import com.fiszki.fiszkiproject.persistence.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
+	User findByDisplayName(String displayName);
 }

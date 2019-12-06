@@ -114,6 +114,18 @@ public class UserServiceImplTest {
 				.isInstanceOf(ValidatorException.class)
 				.hasMessage(Errors.DISPLAY_NAME_TOO_SHORT.toString());
 		}
+		
+		@Test
+		@DisplayName("should throw exception when name already taken")
+		public void shouldThrowExceptionWhenNewNameAlreadyTaken() throws ValidatorException {
+			Long userId = 2L;
+			String newDisplayName = "user_1";
+			UserNameChangeDto dto = new UserNameChangeDto(userId, newDisplayName);
+			
+			assertThatThrownBy(() -> userService.changeDisplayName(dto))
+				.isInstanceOf(ValidatorException.class)
+				.hasMessage(Errors.DISPLAY_NAME_ALREADY_TAKEN.toString());
+		}
 	}
 	
 	@Nested

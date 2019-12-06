@@ -103,7 +103,7 @@ public class UserControllerTest {
 	
 		@Test
 		@DisplayName("should return 404 when user does not exist")
-		public void singleUserEndpointShouldReturnNullWhenUserDoesNotExists() throws Exception {
+		public void getInValidUser() throws Exception {
 			when(userService.getUserById(1L)).thenReturn(null);
 			
 			final MockHttpServletResponse response = mockMvc
@@ -116,7 +116,7 @@ public class UserControllerTest {
 		
 		@Test
 		@DisplayName("should return return correct json data when user exists")
-		public void singleUserEndpointShouldReturnValidUserData() throws Exception {
+		public void getValidUser() throws Exception {
 			when(userService.getUserById(33L))
 				.thenReturn(new UserBasicInfoDto(33L, "user33@test.com", "user_33"));
 			
@@ -146,7 +146,7 @@ public class UserControllerTest {
 		
 		@Test
 		@DisplayName("should return no content when success")
-		public void changeDisplayNameEndpointShouldReturnNoContentWhenChangeWasOk() throws Exception {		
+		public void changeWhenWasOk() throws Exception {		
 			when(userService.changeDisplayName(any(UserNameChangeDto.class)))
 				.thenReturn(true);
 			
@@ -161,7 +161,7 @@ public class UserControllerTest {
 		
 		@Test
 		@DisplayName("should return 404 when user does not exist")
-		public void changeDisplayNameEndpointShouldReturnNotFoundWhenInvalidUserId() throws Exception {	
+		public void changeWithInvalidUserId() throws Exception {	
 			when(userService.changeDisplayName(any(UserNameChangeDto.class)))
 				.thenReturn(false);
 			
@@ -176,7 +176,7 @@ public class UserControllerTest {
 		
 		@Test
 		@DisplayName("should return 400 when invalid display name")
-		public void changeDisplayNameEndpointShouldReturnBadRequestWhenInvalidName() throws Exception {		
+		public void changeToInvalidName() throws Exception {		
 			when(userService.changeDisplayName(any(UserNameChangeDto.class)))
 				.thenThrow(new UserValidatorException(Errors.DISPLAY_NAME_TOO_SHORT));
 			
@@ -186,8 +186,29 @@ public class UserControllerTest {
 							.content(jsonContent));
 			
 			result
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isBadRequest())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.type", is("UserValidatorException")))
+				.andExpect(jsonPath("$.message", is(Errors.DISPLAY_NAME_TOO_SHORT.toString())));
 		}		
+		
+		@Test
+		@DisplayName("should return 400 when name already taken")
+		public void changeNameToAlradyTakenOne() throws Exception {		
+			when(userService.changeDisplayName(any(UserNameChangeDto.class)))
+				.thenThrow(new UserValidatorException(Errors.DISPLAY_NAME_ALREADY_TAKEN));
+			
+			final ResultActions result = mockMvc
+					.perform(put("/api/users/changeDisplayName")
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(jsonContent));
+			
+			result
+				.andExpect(status().isBadRequest())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.type", is("UserValidatorException")))
+				.andExpect(jsonPath("$.message", is(Errors.DISPLAY_NAME_ALREADY_TAKEN.toString())));
+		}	
 		
 	}
 	

@@ -12,11 +12,15 @@ import com.fiszki.fiszkiproject.validators.UserValidator;
 public class UserValidatorImpl implements UserValidator {
 
 	@Override
-	public boolean validateDisplayName(String displayName) throws UserValidatorException {
+	public boolean validateDisplayName(String displayName, boolean userExists) throws UserValidatorException {
 
 		if (displayName == null 
 			|| displayName.trim().length() < ValidationBoundries.DISPLAY_NAME_MIN_LENGTH) {
 			throw new UserValidatorException(Errors.DISPLAY_NAME_TOO_SHORT);
+		}
+		
+		if (userExists) {
+			throw new UserValidatorException(Errors.DISPLAY_NAME_ALREADY_TAKEN);
 		}
 		
 		return true;

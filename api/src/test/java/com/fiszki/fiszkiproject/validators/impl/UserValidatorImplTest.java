@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,34 +27,36 @@ public class UserValidatorImplTest {
 	@DisplayName("validate display name")
 	class DisplayNameValidator {
 		
-		@Test
+		@ParameterizedTest
 		@DisplayName("should return true when valid")
-		public void shouldReturnTrueWhenIsValid() throws ValidatorException {
-			String displayName = "validDisplayName";
+		@ValueSource(strings = {"validDisplayName", "1234", "1   R", 
+								"!@#$%^", "*******", "???", "@\t$"})
+		public void validateValidName(String displayName) throws ValidatorException {
 			
-			boolean result = validator.validateDisplayName(displayName);
+			boolean result = validator.validateDisplayName(displayName, false);
 			
 			assertThat(result).isTrue();
 		}
 		
-		@Test
-		@DisplayName("should throw exception when null")
-		public void shouldThrowExceptionWhenNameIsNull() throws ValidatorException {
-			String displayName = null;
-			
-			assertThatThrownBy(() -> validator.validateDisplayName(displayName))
+		@ParameterizedTest
+		@DisplayName("should throw exception when name has not enough valid characters")
+		@NullAndEmptySource
+		@ValueSource(strings = {"   ", "a   ", "    1w", "\t   k1", "  a\n" })
+		public void validateWhenNameNotEnoughValidChars(String displayName) throws ValidatorException {
+
+			assertThatThrownBy(() -> validator.validateDisplayName(displayName, false))
 				.isInstanceOf(ValidatorException.class)
 				.hasMessage(Errors.DISPLAY_NAME_TOO_SHORT.toString());
 		}
 		
 		@Test
-		@DisplayName("should throw exception when name has not enough valid characters")
-		public void validateWhenNotEnoughValidCharacters() throws ValidatorException {
-			String displayName = "   ab   ";
+		@DisplayName("should throw exception when user exists")
+		public void validateWhenUserExists() throws ValidatorException {
+			String displayName = "validDisplayName";
 			
-			assertThatThrownBy(() -> validator.validateDisplayName(displayName))
+			assertThatThrownBy(() -> validator.validateDisplayName(displayName, true))
 				.isInstanceOf(ValidatorException.class)
-				.hasMessage(Errors.DISPLAY_NAME_TOO_SHORT.toString());
+				.hasMessage(Errors.DISPLAY_NAME_ALREADY_TAKEN.toString());
 		}
 	}
 	
@@ -63,28 +66,22 @@ public class UserValidatorImplTest {
 		
 		@ParameterizedTest
 		@DisplayName("should return true when valid")
-		@ValueSource(strings = {"Testtest!", "thisis@tesT", "12345678A", "howDoYouDo?", "P*******", "-BBBBBBB"})
+		@ValueSource(strings = {"Testtest!", "thisis@tesT", "12345678A",
+								"howDoYouDo?", "P*******", "-BBBBBBB", "B       @"})
 		public void validateValidPassword(String password) throws ValidatorException {
+			
 			boolean result = validator.validatePassword(password);
 			
 			assertThat(result).isTrue();
 		}
 		
-		@Test
-		@DisplayName("should throw exception when null")
-		public void validateNull() throws ValidatorException {
-			String password = null;
-			
-			assertThatThrownBy(() -> validator.validatePassword(password))
-				.isInstanceOf(UserValidatorException.class)
-				.hasMessage(Errors.PASSWORD_TOO_SHORT.toString());
-		}
-		
-		@Test
+		@ParameterizedTest
 		@DisplayName("should throw exception when too short")
-		public void validateWhenTooShort() throws ValidatorException {
-			String password = "TooShor  ";
-			
+		@NullAndEmptySource
+		@ValueSource(strings = {"            ", "ana   a", "   s r111w", 
+								"\t   k1", "a\t\t\t\t\n" })
+		public void validateWhenTooShort(String password) throws ValidatorException {
+
 			assertThatThrownBy(() -> validator.validatePassword(password))
 				.isInstanceOf(UserValidatorException.class)
 				.hasMessage(Errors.PASSWORD_TOO_SHORT.toString());

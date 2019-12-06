@@ -55,7 +55,8 @@ public class UserServiceImpl implements UserService {
 		Optional<User> userOpt = repository.findById(dto.getId());
 		
 		if (userOpt.isPresent()) {
-			validator.validateDisplayName(dto.getDisplayName());
+			User withGivenDisplayName = repository.findByDisplayName(dto.getDisplayName());
+			validator.validateDisplayName(dto.getDisplayName(), withGivenDisplayName != null);
 			
 			User entity = userOpt.get();
 			entity.setDisplayName(dto.getDisplayName());

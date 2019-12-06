@@ -8,12 +8,14 @@ public interface UserValidator {
 	/**
 	 * Checks if given display name meets the following conditions:
 	 * - is at least 3 characters long
+	 * - is unique
 	 * 
 	 * @param displayName
+	 * @param userExists - value that determines if user with given display name exists in db
 	 * @return true when all conditions are fulfilled
 	 * @throws UserValidatorException when any of the checked conditions is not fulfilled
 	 */
-	boolean validateDisplayName(String displayName) throws UserValidatorException;
+	boolean validateDisplayName(String displayName, boolean userExists) throws UserValidatorException;
 	
 	/**
 	 * Checks if given password meets the following conditions:
