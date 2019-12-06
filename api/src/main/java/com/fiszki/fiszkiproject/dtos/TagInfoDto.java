@@ -13,9 +13,9 @@ public class TagInfoDto {
 
 	private String displayName;
 
-	private Integer numberOfCards;
+	private int numberOfCards;
 
-	public TagInfoDto(Long id, String displayName, Integer numberOfCards) {
+	public TagInfoDto(Long id, String displayName, int numberOfCards) {
 		this.id = id;
 		this.displayName = displayName;
 		this.numberOfCards = numberOfCards;

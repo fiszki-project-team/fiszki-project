@@ -21,6 +21,8 @@ import lombok.Setter;
 @NamedQuery(name = "Tag.findTagsByUserId", query = "SELECT tag FROM Tag tag WHERE tag.user.id = :id ORDER BY tag.displayName ASC")
 public class Tag extends AbstractEntity {
 
+	public static final String FIND_TAGS_BY_USER_ID = "Tag.findTagsByUserId";
+
 	private String displayName;
 
 	@ManyToMany(mappedBy = "tags")

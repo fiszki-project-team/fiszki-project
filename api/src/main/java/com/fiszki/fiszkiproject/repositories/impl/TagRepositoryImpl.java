@@ -18,7 +18,7 @@ public class TagRepositoryImpl implements CustomTagRepository {
 
 	@Override
 	public List<Tag> findTagsByUserId(Long userId) {
-		return em.createNamedQuery("Tag.findTagsByUserId", Tag.class).setParameter("id", userId).getResultList();
+		return em.createNamedQuery(Tag.FIND_TAGS_BY_USER_ID, Tag.class).setParameter("id", userId).getResultList();
 	}
 
 }

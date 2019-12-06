@@ -1,7 +1,6 @@
 package com.fiszki.fiszkiproject.repositories.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,8 +26,9 @@ class TagRepositoryImplTest {
 		List<Tag> tags = tagRepository.findTagsByUserId(1L);
 		List<Long> tagIds = tags.stream().map(t -> t.getId()).collect(Collectors.toList());
 		
-		assertThat(tagIds).containsExactlyInAnyOrder(1L, 2L);
 		assertEquals(2, tags.size());
+		assertEquals("holidays", tags.get(0).getDisplayName());
+		assertEquals("work", tags.get(1).getDisplayName());
 	}
 
 }

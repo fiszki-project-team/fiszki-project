@@ -9,7 +9,7 @@ import com.fiszki.fiszkiproject.persistence.entity.Tag;
 public class TagMapper {
 
 	public TagInfoDto mapToInfo(Tag tag) {
-		return new TagInfoDto(tag.getId(), tag.getDisplayName(), new Integer(tag.getCards().size()));
+		return new TagInfoDto(tag.getId(), tag.getDisplayName(), tag.getCards().size());
 	}
 
 }
