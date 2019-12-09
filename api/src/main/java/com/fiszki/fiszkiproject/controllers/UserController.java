@@ -49,7 +49,7 @@ public class UserController {
 		}
 	}
 	
-	@PutMapping("/changeDisplayName")
+	@PutMapping("/displayName")
 	public ResponseEntity<?> changeUserDisplayName(@RequestBody UserNameChangeDto dto) {
 		try {	
 			if (userService.changeDisplayName(dto)) {
@@ -64,7 +64,7 @@ public class UserController {
 		}
 	}
 	
-	@PutMapping("/changePassword")
+	@PutMapping("/password")
 	public ResponseEntity<?> changeUserPassword(@RequestBody UserPasswordChangeDto dto) {
 		try {	
 			if (userService.changePassword(dto)) {

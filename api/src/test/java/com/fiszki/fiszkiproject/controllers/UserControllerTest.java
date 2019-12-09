@@ -151,7 +151,7 @@ public class UserControllerTest {
 				.thenReturn(true);
 			
 			final ResultActions result = mockMvc
-					.perform(put("/api/users/changeDisplayName")
+					.perform(put("/api/users/displayName")
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(jsonContent));
 			
@@ -166,7 +166,7 @@ public class UserControllerTest {
 				.thenReturn(false);
 			
 			final ResultActions result = mockMvc
-					.perform(put("/api/users/changeDisplayName")
+					.perform(put("/api/users/displayName")
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(jsonContent));
 			
@@ -181,7 +181,7 @@ public class UserControllerTest {
 				.thenThrow(new UserValidatorException(Errors.DISPLAY_NAME_TOO_SHORT));
 			
 			final ResultActions result = mockMvc
-					.perform(put("/api/users/changeDisplayName")
+					.perform(put("/api/users/displayName")
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(jsonContent));
 			
@@ -199,7 +199,7 @@ public class UserControllerTest {
 				.thenThrow(new UserValidatorException(Errors.DISPLAY_NAME_ALREADY_TAKEN));
 			
 			final ResultActions result = mockMvc
-					.perform(put("/api/users/changeDisplayName")
+					.perform(put("/api/users/displayName")
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(jsonContent));
 			
@@ -231,7 +231,7 @@ public class UserControllerTest {
 				.thenReturn(true);
 			
 			final ResultActions result = mockMvc
-					.perform(put("/api/users/changePassword")
+					.perform(put("/api/users/password")
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(jsonContent));
 			
@@ -246,7 +246,7 @@ public class UserControllerTest {
 				.thenReturn(false);
 			
 			final ResultActions result = mockMvc
-					.perform(put("/api/users/changePassword")
+					.perform(put("/api/users/password")
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(jsonContent));
 			
@@ -261,7 +261,7 @@ public class UserControllerTest {
 				.thenThrow(new AuthValidatorException(Errors.INVALID_PASSWORD));
 			
 			final ResultActions result = mockMvc
-					.perform(put("/api/users/changePassword")
+					.perform(put("/api/users/password")
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(jsonContent));
 			
@@ -277,7 +277,7 @@ public class UserControllerTest {
 				.thenThrow(new UserValidatorException(error));
 			
 			final ResultActions result = mockMvc
-					.perform(put("/api/users/changePassword")
+					.perform(put("/api/users/password")
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(jsonContent));
 			
@@ -295,7 +295,7 @@ public class UserControllerTest {
 				.thenThrow(new AuthValidatorException(Errors.INVALID_PASSWORD));
 			
 			final ResultActions result = mockMvc
-					.perform(put("/api/users/changePassword")
+					.perform(put("/api/users/password")
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(jsonContent));
 			
