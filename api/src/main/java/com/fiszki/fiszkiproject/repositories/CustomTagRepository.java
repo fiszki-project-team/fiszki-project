@@ -6,6 +6,6 @@ import com.fiszki.fiszkiproject.persistence.entity.Tag;
 
 public interface CustomTagRepository {
 
-	List<Tag> findTagsByUserId(Long userId);
+	List<Tag> findTagsByUserId(Long id);
 
 }
