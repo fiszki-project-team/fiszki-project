@@ -1,6 +1,7 @@
 package com.fiszki.fiszkiproject.repositories.impl;
 
 import static org.assertj.core.api.Assertions.assertThatObject;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import javax.transaction.Transactional;
@@ -16,7 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.fiszki.fiszkiproject.persistence.entity.User;
 import com.fiszki.fiszkiproject.repositories.UserRepository;
 import com.fiszki.fiszkiproject.services.exceptions.InvalidIdException;
-import com.fiszki.fiszkiproject.services.exceptions.common.StringMessages;
+import com.fiszki.fiszkiproject.services.exceptions.common.APIErrors;
 
 @SpringBootTest
 @Transactional
@@ -36,14 +37,17 @@ class UserRepositoryImplTest {
 		public void validateWhenUserIsNotInDataBase(Long Id) {
 
 			assertThrows(InvalidIdException.class, () -> userRepository.findByIdWithIdValidation(Id),
-					StringMessages.USER_NOT_IN_DATABASE);
+					APIErrors.USER_NOT_IN_DATABASE.name());
 		}
 		
 		@ParameterizedTest
 		@DisplayName("should return User object when user exists in DataBase")
 		@ValueSource(longs = {1L, 2L, 3L})
 		public void returnUserWhenIsInDataBase(Long Id) {
-			assertThatObject(userRepository.findByIdWithIdValidation(Id)).isInstanceOf(User.class);
+			User user = userRepository.findByIdWithIdValidation(Id);
+			
+			assertThatObject(user).isNotNull();
+			assertEquals(Id, user.getId());
 		}
 	}
 

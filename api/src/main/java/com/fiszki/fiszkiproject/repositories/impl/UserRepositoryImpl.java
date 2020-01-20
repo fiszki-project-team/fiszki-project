@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.fiszki.fiszkiproject.persistence.entity.User;
 import com.fiszki.fiszkiproject.repositories.CustomUserRepository;
 import com.fiszki.fiszkiproject.services.exceptions.InvalidIdException;
-import com.fiszki.fiszkiproject.services.exceptions.common.StringMessages;
+import com.fiszki.fiszkiproject.services.exceptions.common.APIErrors;
 
 @Repository
 public class UserRepositoryImpl implements CustomUserRepository {
@@ -22,17 +22,16 @@ public class UserRepositoryImpl implements CustomUserRepository {
 	 */
 	@Override
 	public User findByIdWithIdValidation(Long id) {
-		if (id == null) {
-			throw new InvalidIdException(StringMessages.USER_NOT_IN_DATABASE);
-		}
-		
-		User user = em.find(User.class, id);
+		try {
+			User user = em.find(User.class, id);
 
-		if (user != null) {
-			return user;
-		} else {
-			throw new InvalidIdException(StringMessages.USER_NOT_IN_DATABASE);
+			if (user != null) {
+				return user;
+			}
+		} catch (IllegalArgumentException e) {
+			throw new InvalidIdException(APIErrors.USER_NOT_IN_DATABASE.name());
 		}
+		throw new InvalidIdException(APIErrors.USER_NOT_IN_DATABASE.name());
 	}
 
 }
