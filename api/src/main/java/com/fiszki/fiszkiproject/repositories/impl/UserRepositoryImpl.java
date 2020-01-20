@@ -22,6 +22,10 @@ public class UserRepositoryImpl implements CustomUserRepository {
 	 */
 	@Override
 	public User findByIdWithIdValidation(Long id) {
+		if (id == null) {
+			throw new InvalidIdException(StringMessages.USER_NOT_IN_DATABASE);
+		}
+		
 		User user = em.find(User.class, id);
 
 		if (user != null) {
