@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.fiszki.fiszkiproject.exceptions.AuthValidatorException;
 import com.fiszki.fiszkiproject.exceptions.UserValidatorException;
-import com.fiszki.fiszkiproject.exceptions.common.Errors;
+import com.fiszki.fiszkiproject.exceptions.common.APIErrors;
 import com.fiszki.fiszkiproject.exceptions.common.ValidationBoundries;
 import com.fiszki.fiszkiproject.validators.UserValidator;
 
@@ -16,11 +16,11 @@ public class UserValidatorImpl implements UserValidator {
 
 		if (displayName == null 
 			|| displayName.trim().length() < ValidationBoundries.DISPLAY_NAME_MIN_LENGTH) {
-			throw new UserValidatorException(Errors.DISPLAY_NAME_TOO_SHORT);
+			throw new UserValidatorException(APIErrors.DISPLAY_NAME_TOO_SHORT);
 		}
 		
 		if (userExists) {
-			throw new UserValidatorException(Errors.DISPLAY_NAME_ALREADY_TAKEN);
+			throw new UserValidatorException(APIErrors.DISPLAY_NAME_ALREADY_TAKEN);
 		}
 		
 		return true;
@@ -30,15 +30,15 @@ public class UserValidatorImpl implements UserValidator {
 	public boolean validatePassword(String password) throws UserValidatorException {
 		
 		if (password == null || password.trim().length() < ValidationBoundries.PASSWORD_MIN_LENGTH) {
-			throw new UserValidatorException(Errors.PASSWORD_TOO_SHORT);
+			throw new UserValidatorException(APIErrors.PASSWORD_TOO_SHORT);
 		}
 		
 		if (password.toLowerCase().equals(password)) {
-			throw new UserValidatorException(Errors.PASSWORD_HAS_NO_CAPITAL_LETTERS);
+			throw new UserValidatorException(APIErrors.PASSWORD_HAS_NO_CAPITAL_LETTERS);
 		}
 		
 		if (hasNoSpecialCharacters(password)) {
-			throw new UserValidatorException(Errors.PASSWORD_HAS_NO_SPECIAL_CHARS);
+			throw new UserValidatorException(APIErrors.PASSWORD_HAS_NO_SPECIAL_CHARS);
 		}
 		
 		return true;

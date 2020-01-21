@@ -5,7 +5,7 @@ import java.util.List;
 import com.fiszki.fiszkiproject.dtos.UserBasicInfoDto;
 import com.fiszki.fiszkiproject.dtos.UserNameChangeDto;
 import com.fiszki.fiszkiproject.dtos.UserPasswordChangeDto;
-import com.fiszki.fiszkiproject.exceptions.common.ValidatorException;
+import com.fiszki.fiszkiproject.exceptions.common.BusinessException;
 
 public interface UserService {
 	
@@ -21,7 +21,7 @@ public interface UserService {
 	 * @return true if success or false if user with given id could not be found
 	 * @throws ValidatorException when new display name does not fulfill validity conditions
 	 */
-	boolean changeDisplayName(UserNameChangeDto dto) throws ValidatorException;
+	boolean changeDisplayName(UserNameChangeDto dto) throws BusinessException;
 	
 	/**
 	 * Allows User to change their password.
@@ -33,6 +33,6 @@ public interface UserService {
 	 * @return true if success or false if user with given id could not be found
 	 * @throws ValidatorException
 	 */
-	boolean changePassword(UserPasswordChangeDto dto) throws ValidatorException;
+	boolean changePassword(UserPasswordChangeDto dto) throws BusinessException;
 
 }

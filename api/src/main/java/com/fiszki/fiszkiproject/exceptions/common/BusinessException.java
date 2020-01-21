@@ -1,4 +1,4 @@
-package com.fiszki.fiszkiproject.services.exceptions;
+package com.fiszki.fiszkiproject.exceptions.common;
 
 public class BusinessException extends RuntimeException {
 

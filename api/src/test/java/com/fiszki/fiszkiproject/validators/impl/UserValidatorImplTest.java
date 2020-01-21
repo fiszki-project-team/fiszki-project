@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.fiszki.fiszkiproject.exceptions.UserValidatorException;
-import com.fiszki.fiszkiproject.exceptions.common.Errors;
-import com.fiszki.fiszkiproject.exceptions.common.ValidatorException;
+import com.fiszki.fiszkiproject.exceptions.common.APIErrors;
+import com.fiszki.fiszkiproject.exceptions.common.BusinessException;
 import com.fiszki.fiszkiproject.validators.UserValidator;
 
 @SpringBootTest
@@ -31,7 +31,7 @@ public class UserValidatorImplTest {
 		@DisplayName("should return true when valid")
 		@ValueSource(strings = {"validDisplayName", "1234", "1   R", 
 								"!@#$%^", "*******", "???", "@\t$"})
-		public void validateValidName(String displayName) throws ValidatorException {
+		public void validateValidName(String displayName) throws BusinessException {
 			
 			boolean result = validator.validateDisplayName(displayName, false);
 			
@@ -42,21 +42,21 @@ public class UserValidatorImplTest {
 		@DisplayName("should throw exception when name has not enough valid characters")
 		@NullAndEmptySource
 		@ValueSource(strings = {"   ", "a   ", "    1w", "\t   k1", "  a\n" })
-		public void validateWhenNameNotEnoughValidChars(String displayName) throws ValidatorException {
+		public void validateWhenNameNotEnoughValidChars(String displayName) throws BusinessException {
 
 			assertThatThrownBy(() -> validator.validateDisplayName(displayName, false))
-				.isInstanceOf(ValidatorException.class)
-				.hasMessage(Errors.DISPLAY_NAME_TOO_SHORT.toString());
+				.isInstanceOf(BusinessException.class)
+				.hasMessage(APIErrors.DISPLAY_NAME_TOO_SHORT.toString());
 		}
 		
 		@Test
 		@DisplayName("should throw exception when user exists")
-		public void validateWhenUserExists() throws ValidatorException {
+		public void validateWhenUserExists() throws BusinessException {
 			String displayName = "validDisplayName";
 			
 			assertThatThrownBy(() -> validator.validateDisplayName(displayName, true))
-				.isInstanceOf(ValidatorException.class)
-				.hasMessage(Errors.DISPLAY_NAME_ALREADY_TAKEN.toString());
+				.isInstanceOf(BusinessException.class)
+				.hasMessage(APIErrors.DISPLAY_NAME_ALREADY_TAKEN.toString());
 		}
 	}
 	
@@ -68,7 +68,7 @@ public class UserValidatorImplTest {
 		@DisplayName("should return true when valid")
 		@ValueSource(strings = {"Testtest!", "thisis@tesT", "12345678A",
 								"howDoYouDo?", "P*******", "-BBBBBBB", "B       @"})
-		public void validateValidPassword(String password) throws ValidatorException {
+		public void validateValidPassword(String password) throws BusinessException {
 			
 			boolean result = validator.validatePassword(password);
 			
@@ -80,31 +80,31 @@ public class UserValidatorImplTest {
 		@NullAndEmptySource
 		@ValueSource(strings = {"            ", "ana   a", "   s r111w", 
 								"\t   k1", "a\t\t\t\t\n" })
-		public void validateWhenTooShort(String password) throws ValidatorException {
+		public void validateWhenTooShort(String password) throws BusinessException {
 
 			assertThatThrownBy(() -> validator.validatePassword(password))
 				.isInstanceOf(UserValidatorException.class)
-				.hasMessage(Errors.PASSWORD_TOO_SHORT.toString());
+				.hasMessage(APIErrors.PASSWORD_TOO_SHORT.toString());
 		}
 		
 		@ParameterizedTest
 		@DisplayName("shoud throw exception when no capital letter")
 		@ValueSource(strings = {"thisis@test", "12345678", "********"})
-		public void validateWhenNoCapital(String password) throws ValidatorException {
+		public void validateWhenNoCapital(String password) throws BusinessException {
 			
 			assertThatThrownBy(() -> validator.validatePassword(password))
 				.isInstanceOf(UserValidatorException.class)
-				.hasMessage(Errors.PASSWORD_HAS_NO_CAPITAL_LETTERS.toString());
+				.hasMessage(APIErrors.PASSWORD_HAS_NO_CAPITAL_LETTERS.toString());
 		}
 		
 		@Test
 		@DisplayName("shoud throw exception when no special chars")
-		public void validateWhenNoSpecialChars() throws ValidatorException {
+		public void validateWhenNoSpecialChars() throws BusinessException {
 			String password = "InValiDPassword";
 			
 			assertThatThrownBy(() -> validator.validatePassword(password))
 				.isInstanceOf(UserValidatorException.class)
-				.hasMessage(Errors.PASSWORD_HAS_NO_SPECIAL_CHARS.toString());
+				.hasMessage(APIErrors.PASSWORD_HAS_NO_SPECIAL_CHARS.toString());
 		}
 	}
 	

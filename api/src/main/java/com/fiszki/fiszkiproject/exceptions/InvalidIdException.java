@@ -1,4 +1,6 @@
-package com.fiszki.fiszkiproject.services.exceptions;
+package com.fiszki.fiszkiproject.exceptions;
+
+import com.fiszki.fiszkiproject.exceptions.common.BusinessException;
 
 /**
  * This exception is thrown when given id is invalid and does not occur in Database.

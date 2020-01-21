@@ -5,10 +5,10 @@ import javax.persistence.PersistenceContext;
 
 import org.springframework.stereotype.Repository;
 
+import com.fiszki.fiszkiproject.exceptions.InvalidIdException;
+import com.fiszki.fiszkiproject.exceptions.common.APIErrors;
 import com.fiszki.fiszkiproject.persistence.entity.User;
 import com.fiszki.fiszkiproject.repositories.CustomUserRepository;
-import com.fiszki.fiszkiproject.services.exceptions.InvalidIdException;
-import com.fiszki.fiszkiproject.services.exceptions.common.APIErrors;
 
 @Repository
 public class UserRepositoryImpl implements CustomUserRepository {

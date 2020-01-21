@@ -18,7 +18,7 @@ import com.fiszki.fiszkiproject.dtos.UserBasicInfoDto;
 import com.fiszki.fiszkiproject.dtos.UserNameChangeDto;
 import com.fiszki.fiszkiproject.dtos.UserPasswordChangeDto;
 import com.fiszki.fiszkiproject.exceptions.UserValidatorException;
-import com.fiszki.fiszkiproject.exceptions.common.ValidatorException;
+import com.fiszki.fiszkiproject.exceptions.common.BusinessException;
 import com.fiszki.fiszkiproject.services.UserService;
 
 @RestController
@@ -57,7 +57,7 @@ public class UserController {
 			}
 			
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} catch (ValidatorException e) {
+		} catch (BusinessException e) {
 			ErrorMessageDto error = new ErrorMessageDto("UserValidatorException", e.getMessage());
 			
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
@@ -72,7 +72,7 @@ public class UserController {
 			}
 			
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} catch (ValidatorException e) {
+		} catch (BusinessException e) {
 			String type = "AuthValidatorException";
 			
 			if (e instanceof UserValidatorException) {

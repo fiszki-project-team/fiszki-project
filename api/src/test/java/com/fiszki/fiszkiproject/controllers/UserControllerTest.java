@@ -38,7 +38,7 @@ import com.fiszki.fiszkiproject.dtos.UserNameChangeDto;
 import com.fiszki.fiszkiproject.dtos.UserPasswordChangeDto;
 import com.fiszki.fiszkiproject.exceptions.AuthValidatorException;
 import com.fiszki.fiszkiproject.exceptions.UserValidatorException;
-import com.fiszki.fiszkiproject.exceptions.common.Errors;
+import com.fiszki.fiszkiproject.exceptions.common.APIErrors;
 import com.fiszki.fiszkiproject.services.UserService;
 import com.fiszki.fiszkiproject.services.impl.UserServiceImpl;
 
@@ -178,7 +178,7 @@ public class UserControllerTest {
 		@DisplayName("should return 400 when invalid display name")
 		public void changeToInvalidName() throws Exception {		
 			when(userService.changeDisplayName(any(UserNameChangeDto.class)))
-				.thenThrow(new UserValidatorException(Errors.DISPLAY_NAME_TOO_SHORT));
+				.thenThrow(new UserValidatorException(APIErrors.DISPLAY_NAME_TOO_SHORT));
 			
 			final ResultActions result = mockMvc
 					.perform(put("/api/users/displayName")
@@ -189,14 +189,14 @@ public class UserControllerTest {
 				.andExpect(status().isBadRequest())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.type", is("UserValidatorException")))
-				.andExpect(jsonPath("$.message", is(Errors.DISPLAY_NAME_TOO_SHORT.toString())));
+				.andExpect(jsonPath("$.message", is(APIErrors.DISPLAY_NAME_TOO_SHORT.toString())));
 		}		
 		
 		@Test
 		@DisplayName("should return 400 when name already taken")
 		public void changeNameToAlradyTakenOne() throws Exception {		
 			when(userService.changeDisplayName(any(UserNameChangeDto.class)))
-				.thenThrow(new UserValidatorException(Errors.DISPLAY_NAME_ALREADY_TAKEN));
+				.thenThrow(new UserValidatorException(APIErrors.DISPLAY_NAME_ALREADY_TAKEN));
 			
 			final ResultActions result = mockMvc
 					.perform(put("/api/users/displayName")
@@ -207,7 +207,7 @@ public class UserControllerTest {
 				.andExpect(status().isBadRequest())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.type", is("UserValidatorException")))
-				.andExpect(jsonPath("$.message", is(Errors.DISPLAY_NAME_ALREADY_TAKEN.toString())));
+				.andExpect(jsonPath("$.message", is(APIErrors.DISPLAY_NAME_ALREADY_TAKEN.toString())));
 		}	
 		
 	}
@@ -258,7 +258,7 @@ public class UserControllerTest {
 		@DisplayName("should return 400 when invalid old password")
 		public void changeWhenInvalidOldPassword() throws Exception {		
 			when(userService.changePassword(any(UserPasswordChangeDto.class)))
-				.thenThrow(new AuthValidatorException(Errors.INVALID_PASSWORD));
+				.thenThrow(new AuthValidatorException(APIErrors.INVALID_PASSWORD));
 			
 			final ResultActions result = mockMvc
 					.perform(put("/api/users/password")
@@ -271,8 +271,8 @@ public class UserControllerTest {
 
 		@ParameterizedTest
 		@DisplayName("should return 400 and when invalid new password")
-		@EnumSource(Errors.class)
-		public void changeWhenInvalidNewPassword(Errors error) throws Exception {		
+		@EnumSource(APIErrors.class)
+		public void changeWhenInvalidNewPassword(APIErrors error) throws Exception {		
 			when(userService.changePassword(any(UserPasswordChangeDto.class)))
 				.thenThrow(new UserValidatorException(error));
 			
@@ -292,7 +292,7 @@ public class UserControllerTest {
 		@DisplayName("should return 400 and when old password does not match")
 		public void changeWhenOldPasswordDoesNotMatch() throws Exception {		
 			when(userService.changePassword(any(UserPasswordChangeDto.class)))
-				.thenThrow(new AuthValidatorException(Errors.INVALID_PASSWORD));
+				.thenThrow(new AuthValidatorException(APIErrors.INVALID_PASSWORD));
 			
 			final ResultActions result = mockMvc
 					.perform(put("/api/users/password")
@@ -303,7 +303,7 @@ public class UserControllerTest {
 				.andExpect(status().isBadRequest())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.type", is("AuthValidatorException")))
-				.andExpect(jsonPath("$.message", is(Errors.INVALID_PASSWORD.toString())));
+				.andExpect(jsonPath("$.message", is(APIErrors.INVALID_PASSWORD.toString())));
 		}
 	}
 

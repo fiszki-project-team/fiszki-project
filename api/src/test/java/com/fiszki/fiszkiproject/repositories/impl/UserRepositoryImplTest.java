@@ -14,10 +14,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.fiszki.fiszkiproject.exceptions.InvalidIdException;
+import com.fiszki.fiszkiproject.exceptions.common.APIErrors;
 import com.fiszki.fiszkiproject.persistence.entity.User;
 import com.fiszki.fiszkiproject.repositories.UserRepository;
-import com.fiszki.fiszkiproject.services.exceptions.InvalidIdException;
-import com.fiszki.fiszkiproject.services.exceptions.common.APIErrors;
 
 @SpringBootTest
 @Transactional

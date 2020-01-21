@@ -25,8 +25,8 @@ import com.fiszki.fiszkiproject.dtos.UserNameChangeDto;
 import com.fiszki.fiszkiproject.dtos.UserPasswordChangeDto;
 import com.fiszki.fiszkiproject.exceptions.AuthValidatorException;
 import com.fiszki.fiszkiproject.exceptions.UserValidatorException;
-import com.fiszki.fiszkiproject.exceptions.common.Errors;
-import com.fiszki.fiszkiproject.exceptions.common.ValidatorException;
+import com.fiszki.fiszkiproject.exceptions.common.APIErrors;
+import com.fiszki.fiszkiproject.exceptions.common.BusinessException;
 import com.fiszki.fiszkiproject.persistence.entity.User;
 import com.fiszki.fiszkiproject.repositories.UserRepository;
 import com.fiszki.fiszkiproject.services.UserService;
@@ -76,7 +76,7 @@ public class UserServiceImplTest {
 
 		@Test
 		@DisplayName("should return true for valid name for valid user")
-		public void shouldSuccessfullyChangeDisplayName() throws ValidatorException {
+		public void shouldSuccessfullyChangeDisplayName() throws BusinessException {
 			Long userId = 3L;
 			String newDisplayName = "validName";
 			UserNameChangeDto dto = new UserNameChangeDto(userId, newDisplayName);
@@ -92,7 +92,7 @@ public class UserServiceImplTest {
 
 		@Test
 		@DisplayName("should return false for valid name and invalid user")
-		public void shouldReturnFalseWhenUserIdIsNotValid() throws ValidatorException {
+		public void shouldReturnFalseWhenUserIdIsNotValid() throws BusinessException {
 			Long userId = -1L;
 			String newDisplayName = "validName";
 			UserNameChangeDto dto = new UserNameChangeDto(userId, newDisplayName);
@@ -104,24 +104,24 @@ public class UserServiceImplTest {
 
 		@Test
 		@DisplayName("should throw exception when invalid name")
-		public void shouldThrowExceptionWhenNewNameIsInvalid() throws ValidatorException {
+		public void shouldThrowExceptionWhenNewNameIsInvalid() throws BusinessException {
 			Long userId = 1L;
 			String newDisplayName = "r    ";
 			UserNameChangeDto dto = new UserNameChangeDto(userId, newDisplayName);
 
-			assertThatThrownBy(() -> userService.changeDisplayName(dto)).isInstanceOf(ValidatorException.class)
-					.hasMessage(Errors.DISPLAY_NAME_TOO_SHORT.toString());
+			assertThatThrownBy(() -> userService.changeDisplayName(dto)).isInstanceOf(BusinessException.class)
+					.hasMessage(APIErrors.DISPLAY_NAME_TOO_SHORT.toString());
 		}
 
 		@Test
 		@DisplayName("should throw exception when name already taken")
-		public void shouldThrowExceptionWhenNewNameAlreadyTaken() throws ValidatorException {
+		public void shouldThrowExceptionWhenNewNameAlreadyTaken() throws BusinessException {
 			Long userId = 2L;
 			String newDisplayName = "user_1";
 			UserNameChangeDto dto = new UserNameChangeDto(userId, newDisplayName);
 
-			assertThatThrownBy(() -> userService.changeDisplayName(dto)).isInstanceOf(ValidatorException.class)
-					.hasMessage(Errors.DISPLAY_NAME_ALREADY_TAKEN.toString());
+			assertThatThrownBy(() -> userService.changeDisplayName(dto)).isInstanceOf(BusinessException.class)
+					.hasMessage(APIErrors.DISPLAY_NAME_ALREADY_TAKEN.toString());
 		}
 	}
 
@@ -149,7 +149,7 @@ public class UserServiceImplTest {
 
 		@Test
 		@DisplayName("should return true when valid password and user id")
-		public void changeValidPassword() throws ValidatorException {
+		public void changeValidPassword() throws BusinessException {
 
 			boolean result = mockedService.changePassword(dto);
 			
@@ -158,7 +158,7 @@ public class UserServiceImplTest {
 
 		@Test
 		@DisplayName("should return false when valid password and invalid user id")
-		public void changeInvalidUserId() throws ValidatorException {
+		public void changeInvalidUserId() throws BusinessException {
 			when(repository.findById(any(Long.class))).thenReturn(Optional.empty());
 
 			boolean result = mockedService.changePassword(dto);
@@ -168,23 +168,23 @@ public class UserServiceImplTest {
 
 		@Test
 		@DisplayName("should throw exception when invalid new password")
-		public void changeInvalidNewPassword() throws ValidatorException {
+		public void changeInvalidNewPassword() throws BusinessException {
 			when(validator.validatePassword(any(String.class)))
-					.thenThrow(new UserValidatorException(Errors.PASSWORD_HAS_NO_CAPITAL_LETTERS));
+					.thenThrow(new UserValidatorException(APIErrors.PASSWORD_HAS_NO_CAPITAL_LETTERS));
 
 			assertThatThrownBy(() -> mockedService.changePassword(dto)).isInstanceOf(UserValidatorException.class)
-					.hasMessage(Errors.PASSWORD_HAS_NO_CAPITAL_LETTERS.toString());
+					.hasMessage(APIErrors.PASSWORD_HAS_NO_CAPITAL_LETTERS.toString());
 		}
 
 		@Test
 		@DisplayName("should throw exception when invalid old password")
-		public void changeInvalidOldPassword() throws ValidatorException {
+		public void changeInvalidOldPassword() throws BusinessException {
 			when(validator.validatePassword(any(String.class))).thenReturn(true);
 			when(validator.comparePasswords(any(), any(String.class)))
-					.thenThrow(new AuthValidatorException(Errors.INVALID_PASSWORD));
+					.thenThrow(new AuthValidatorException(APIErrors.INVALID_PASSWORD));
 
 			assertThatThrownBy(() -> mockedService.changePassword(dto)).isInstanceOf(AuthValidatorException.class)
-					.hasMessage(Errors.INVALID_PASSWORD.toString());
+					.hasMessage(APIErrors.INVALID_PASSWORD.toString());
 		}
 
 	}

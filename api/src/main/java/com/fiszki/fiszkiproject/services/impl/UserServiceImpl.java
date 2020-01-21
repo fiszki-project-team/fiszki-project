@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import com.fiszki.fiszkiproject.dtos.UserBasicInfoDto;
 import com.fiszki.fiszkiproject.dtos.UserNameChangeDto;
 import com.fiszki.fiszkiproject.dtos.UserPasswordChangeDto;
-import com.fiszki.fiszkiproject.exceptions.common.ValidatorException;
+import com.fiszki.fiszkiproject.exceptions.common.BusinessException;
 import com.fiszki.fiszkiproject.mappers.UserMapper;
 import com.fiszki.fiszkiproject.persistence.entity.User;
 import com.fiszki.fiszkiproject.repositories.UserRepository;
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean changeDisplayName(UserNameChangeDto dto) throws ValidatorException {
+	public boolean changeDisplayName(UserNameChangeDto dto) throws BusinessException {
 		Optional<User> userOpt = repository.findById(dto.getId());
 		
 		if (userOpt.isPresent()) {
@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean changePassword(UserPasswordChangeDto dto) throws ValidatorException {
+	public boolean changePassword(UserPasswordChangeDto dto) throws BusinessException {
 		Optional<User> userOpt = repository.findById(dto.getId());
 		
 		if (userOpt.isPresent()) {
