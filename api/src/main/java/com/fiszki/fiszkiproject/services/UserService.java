@@ -12,7 +12,6 @@ public interface UserService {
 	List<UserBasicInfoDto> getAllUsers();
 	
 	UserBasicInfoDto getUserById(Long id);
-	
 	/**
 	 * Allows User to change their display name.
 	 * Accepts dto that contains only id and new display name.
