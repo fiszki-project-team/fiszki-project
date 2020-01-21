@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -24,6 +23,7 @@ import com.fiszki.fiszkiproject.dtos.UserBasicInfoDto;
 import com.fiszki.fiszkiproject.dtos.UserNameChangeDto;
 import com.fiszki.fiszkiproject.dtos.UserPasswordChangeDto;
 import com.fiszki.fiszkiproject.exceptions.AuthValidatorException;
+import com.fiszki.fiszkiproject.exceptions.InvalidIdException;
 import com.fiszki.fiszkiproject.exceptions.UserValidatorException;
 import com.fiszki.fiszkiproject.exceptions.common.APIErrors;
 import com.fiszki.fiszkiproject.exceptions.common.BusinessException;
@@ -91,15 +91,15 @@ public class UserServiceImplTest {
 		}
 
 		@Test
-		@DisplayName("should return false for valid name and invalid user")
+		@DisplayName("should throw exception for valid name and invalid user")
 		public void shouldReturnFalseWhenUserIdIsNotValid() throws BusinessException {
 			Long userId = -1L;
 			String newDisplayName = "validName";
 			UserNameChangeDto dto = new UserNameChangeDto(userId, newDisplayName);
 
-			boolean result = userService.changeDisplayName(dto);
-
-			assertThat(result).isFalse();
+			assertThatThrownBy(() -> userService.changeDisplayName(dto))
+				.isInstanceOf(InvalidIdException.class)
+				.hasMessage(APIErrors.USER_NOT_IN_DATABASE.toString());
 		}
 
 		@Test
@@ -109,8 +109,9 @@ public class UserServiceImplTest {
 			String newDisplayName = "r    ";
 			UserNameChangeDto dto = new UserNameChangeDto(userId, newDisplayName);
 
-			assertThatThrownBy(() -> userService.changeDisplayName(dto)).isInstanceOf(BusinessException.class)
-					.hasMessage(APIErrors.DISPLAY_NAME_TOO_SHORT.toString());
+			assertThatThrownBy(() -> userService.changeDisplayName(dto))
+				.isInstanceOf(UserValidatorException.class)
+				.hasMessage(APIErrors.DISPLAY_NAME_TOO_SHORT.toString());
 		}
 
 		@Test
@@ -120,8 +121,9 @@ public class UserServiceImplTest {
 			String newDisplayName = "user_1";
 			UserNameChangeDto dto = new UserNameChangeDto(userId, newDisplayName);
 
-			assertThatThrownBy(() -> userService.changeDisplayName(dto)).isInstanceOf(BusinessException.class)
-					.hasMessage(APIErrors.DISPLAY_NAME_ALREADY_TAKEN.toString());
+			assertThatThrownBy(() -> userService.changeDisplayName(dto))
+				.isInstanceOf(UserValidatorException.class)
+				.hasMessage(APIErrors.DISPLAY_NAME_ALREADY_TAKEN.toString());
 		}
 	}
 
@@ -143,9 +145,9 @@ public class UserServiceImplTest {
 		@BeforeEach
 		void setUp() {
 			dto = new UserPasswordChangeDto(1L, "test", "Test1234");
-			when(repository.findById(any(Long.class))).thenReturn(Optional.of(new User()));
-		}
-		 
+			when(repository.findByIdWithIdValidation(any(Long.class)))
+				.thenReturn(new User());
+		}	 
 
 		@Test
 		@DisplayName("should return true when valid password and user id")
@@ -157,13 +159,14 @@ public class UserServiceImplTest {
 		}
 
 		@Test
-		@DisplayName("should return false when valid password and invalid user id")
+		@DisplayName("should throw exception when valid password and invalid user id")
 		public void changeInvalidUserId() throws BusinessException {
-			when(repository.findById(any(Long.class))).thenReturn(Optional.empty());
+			when(repository.findByIdWithIdValidation(any(Long.class)))
+				.thenThrow(new InvalidIdException(APIErrors.USER_NOT_IN_DATABASE.toString()));
 
-			boolean result = mockedService.changePassword(dto);
-
-			assertThat(result).isFalse();
+			assertThatThrownBy(() -> mockedService.changePassword(dto))
+				.isInstanceOf(InvalidIdException.class)
+				.hasMessage(APIErrors.USER_NOT_IN_DATABASE.toString());
 		}
 
 		@Test
@@ -172,8 +175,9 @@ public class UserServiceImplTest {
 			when(validator.validatePassword(any(String.class)))
 					.thenThrow(new UserValidatorException(APIErrors.PASSWORD_HAS_NO_CAPITAL_LETTERS));
 
-			assertThatThrownBy(() -> mockedService.changePassword(dto)).isInstanceOf(UserValidatorException.class)
-					.hasMessage(APIErrors.PASSWORD_HAS_NO_CAPITAL_LETTERS.toString());
+			assertThatThrownBy(() -> mockedService.changePassword(dto))
+				.isInstanceOf(UserValidatorException.class)
+				.hasMessage(APIErrors.PASSWORD_HAS_NO_CAPITAL_LETTERS.toString());
 		}
 
 		@Test
@@ -183,8 +187,9 @@ public class UserServiceImplTest {
 			when(validator.comparePasswords(any(), any(String.class)))
 					.thenThrow(new AuthValidatorException(APIErrors.INVALID_PASSWORD));
 
-			assertThatThrownBy(() -> mockedService.changePassword(dto)).isInstanceOf(AuthValidatorException.class)
-					.hasMessage(APIErrors.INVALID_PASSWORD.toString());
+			assertThatThrownBy(() -> mockedService.changePassword(dto))
+				.isInstanceOf(AuthValidatorException.class)
+				.hasMessage(APIErrors.INVALID_PASSWORD.toString());
 		}
 
 	}

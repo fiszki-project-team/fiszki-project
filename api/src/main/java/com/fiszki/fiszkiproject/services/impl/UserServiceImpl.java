@@ -52,39 +52,28 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public boolean changeDisplayName(UserNameChangeDto dto) throws BusinessException {
-		Optional<User> userOpt = repository.findById(dto.getId());
+		User entity = repository.findByIdWithIdValidation(dto.getId());
 		
-		if (userOpt.isPresent()) {
-			User withGivenDisplayName = repository.findByDisplayName(dto.getDisplayName());
-			validator.validateDisplayName(dto.getDisplayName(), withGivenDisplayName != null);
-			
-			User entity = userOpt.get();
-			entity.setDisplayName(dto.getDisplayName());
-			repository.save(entity);
-			
-			return true;
-		}
+		User withGivenDisplayName = repository.findByDisplayName(dto.getDisplayName());
+		validator.validateDisplayName(dto.getDisplayName(), withGivenDisplayName != null);
 		
-		return false;
+		entity.setDisplayName(dto.getDisplayName());
+		repository.save(entity);		
+			
+		return true;
 	}
 
 	@Override
 	public boolean changePassword(UserPasswordChangeDto dto) throws BusinessException {
-		Optional<User> userOpt = repository.findById(dto.getId());
+		User entity = repository.findByIdWithIdValidation(dto.getId());
 		
-		if (userOpt.isPresent()) {
-			validator.validatePassword(dto.getNewPassword());
-			
-			User entity = userOpt.get();
-			validator.comparePasswords(entity.getPassword(), dto.getOldPassword());
-			
-			entity.setPassword(encodePassword(dto.getNewPassword()));
-			repository.save(entity);
-			
-			return true;
-		}
+		validator.validatePassword(dto.getNewPassword());
+		validator.comparePasswords(entity.getPassword(), dto.getOldPassword());
 		
-		return false;
+		entity.setPassword(encodePassword(dto.getNewPassword()));
+		repository.save(entity);
+		
+		return true;
 	}
 	
 	private String encodePassword(String password) {
