@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
 		User entity = repository.findByIdWithIdValidation(dto.getId());
 		
 		validator.validatePassword(dto.getNewPassword());
-		validator.comparePasswords(entity.getPassword(), dto.getOldPassword());
+		validator.comparePasswords(entity.getPassword(), encodePassword(dto.getOldPassword()));
 		
 		entity.setPassword(encodePassword(dto.getNewPassword()));
 		repository.save(entity);

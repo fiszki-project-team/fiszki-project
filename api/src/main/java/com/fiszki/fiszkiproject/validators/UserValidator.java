@@ -1,6 +1,5 @@
 package com.fiszki.fiszkiproject.validators;
 
-import com.fiszki.fiszkiproject.exceptions.AuthValidatorException;
 import com.fiszki.fiszkiproject.exceptions.UserValidatorException;
 
 public interface UserValidator {
@@ -34,8 +33,8 @@ public interface UserValidator {
 	 * @param oldPassword
 	 * @param newPassword
 	 * @return true if match
-	 * @throws AuthValidatorException when do not match
+	 * @throws UserValidatorException when do not match
 	 */
-	boolean comparePasswords(String oldPassword, String newPassword) throws AuthValidatorException;
+	boolean comparePasswords(String oldPassword, String newPassword) throws UserValidatorException;
 
 }

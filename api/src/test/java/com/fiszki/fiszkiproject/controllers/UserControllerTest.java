@@ -36,7 +36,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fiszki.fiszkiproject.dtos.UserBasicInfoDto;
 import com.fiszki.fiszkiproject.dtos.UserNameChangeDto;
 import com.fiszki.fiszkiproject.dtos.UserPasswordChangeDto;
-import com.fiszki.fiszkiproject.exceptions.AuthValidatorException;
 import com.fiszki.fiszkiproject.exceptions.UserValidatorException;
 import com.fiszki.fiszkiproject.exceptions.common.APIErrors;
 import com.fiszki.fiszkiproject.services.UserService;
@@ -253,25 +252,11 @@ public class UserControllerTest {
 			result
 				.andExpect(status().isNotFound());
 		}	
-		
-		@Test
-		@DisplayName("should return 400 when invalid old password")
-		public void changeWhenInvalidOldPassword() throws Exception {		
-			when(userService.changePassword(any(UserPasswordChangeDto.class)))
-				.thenThrow(new AuthValidatorException(APIErrors.INVALID_PASSWORD));
-			
-			final ResultActions result = mockMvc
-					.perform(put("/api/users/password")
-							.contentType(MediaType.APPLICATION_JSON)
-							.content(jsonContent));
-			
-			result
-				.andExpect(status().isBadRequest());
-		}
 
 		@ParameterizedTest
 		@DisplayName("should return 400 and when invalid new password")
-		@EnumSource(APIErrors.class)
+		@EnumSource(value = APIErrors.class, 
+			names = {"PASSWORD_TOO_SHORT", "PASSWORD_HAS_NO_CAPITAL_LETTERS", "PASSWORD_HAS_NO_SPECIAL_CHARS"})
 		public void changeWhenInvalidNewPassword(APIErrors error) throws Exception {		
 			when(userService.changePassword(any(UserPasswordChangeDto.class)))
 				.thenThrow(new UserValidatorException(error));
@@ -292,7 +277,7 @@ public class UserControllerTest {
 		@DisplayName("should return 400 and when old password does not match")
 		public void changeWhenOldPasswordDoesNotMatch() throws Exception {		
 			when(userService.changePassword(any(UserPasswordChangeDto.class)))
-				.thenThrow(new AuthValidatorException(APIErrors.INVALID_PASSWORD));
+				.thenThrow(new UserValidatorException(APIErrors.PASSWORDS_DO_NOT_MATCH));
 			
 			final ResultActions result = mockMvc
 					.perform(put("/api/users/password")
@@ -302,10 +287,9 @@ public class UserControllerTest {
 			result
 				.andExpect(status().isBadRequest())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$.type", is("AuthValidatorException")))
-				.andExpect(jsonPath("$.message", is(APIErrors.INVALID_PASSWORD.toString())));
+				.andExpect(jsonPath("$.type", is("UserValidatorException")))
+				.andExpect(jsonPath("$.message", is(APIErrors.PASSWORDS_DO_NOT_MATCH.toString())));
 		}
 	}
-
 	
 }

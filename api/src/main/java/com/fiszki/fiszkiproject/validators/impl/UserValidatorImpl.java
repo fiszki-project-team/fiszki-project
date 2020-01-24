@@ -2,7 +2,6 @@ package com.fiszki.fiszkiproject.validators.impl;
 
 import org.springframework.stereotype.Component;
 
-import com.fiszki.fiszkiproject.exceptions.AuthValidatorException;
 import com.fiszki.fiszkiproject.exceptions.UserValidatorException;
 import com.fiszki.fiszkiproject.exceptions.common.APIErrors;
 import com.fiszki.fiszkiproject.exceptions.common.ValidationBoundries;
@@ -15,7 +14,7 @@ public class UserValidatorImpl implements UserValidator {
 	public boolean validateDisplayName(String displayName, boolean userExists) throws UserValidatorException {
 
 		if (displayName == null 
-			|| displayName.trim().length() < ValidationBoundries.DISPLAY_NAME_MIN_LENGTH) {
+				|| displayName.trim().length() < ValidationBoundries.DISPLAY_NAME_MIN_LENGTH) {
 			throw new UserValidatorException(APIErrors.DISPLAY_NAME_TOO_SHORT);
 		}
 		
@@ -29,7 +28,8 @@ public class UserValidatorImpl implements UserValidator {
 	@Override
 	public boolean validatePassword(String password) throws UserValidatorException {
 		
-		if (password == null || password.trim().length() < ValidationBoundries.PASSWORD_MIN_LENGTH) {
+		if (password == null 
+				|| password.trim().length() < ValidationBoundries.PASSWORD_MIN_LENGTH) {
 			throw new UserValidatorException(APIErrors.PASSWORD_TOO_SHORT);
 		}
 		
@@ -65,8 +65,11 @@ public class UserValidatorImpl implements UserValidator {
 	}
 
 	@Override
-	public boolean comparePasswords(String oldPassword, String newPassword) throws AuthValidatorException {
-		// TODO - to be implemented once auth section is up and running
+	public boolean comparePasswords(String oldPassword, String newPassword) throws UserValidatorException {
+		if (!oldPassword.equals(newPassword)) {
+			throw new UserValidatorException(APIErrors.PASSWORDS_DO_NOT_MATCH);
+		}
+		
 		return true;
 	}
 

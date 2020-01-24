@@ -72,12 +72,8 @@ public class UserController {
 			}
 			
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} catch (BusinessException e) {
-			String type = "AuthValidatorException";
-			
-			if (e instanceof UserValidatorException) {
-				type = "UserValidatorException";
-			}
+		} catch (UserValidatorException e) {
+			String type = "UserValidatorException";
 			
 			ErrorMessageDto error = new ErrorMessageDto(type, e.getMessage());
 			

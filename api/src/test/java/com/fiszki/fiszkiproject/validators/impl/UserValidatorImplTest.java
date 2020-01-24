@@ -108,4 +108,31 @@ public class UserValidatorImplTest {
 		}
 	}
 	
+	@Nested
+	@DisplayName("compare passwords")
+	class ComparePasswords {
+		
+		@ParameterizedTest
+		@DisplayName("shoud return true when passwords match")
+		@ValueSource(strings = {"Testtest!", "thisis@tesT", "12345678A",
+				"howDoYouDo?", "P*******", "-BBBBBBB", "B       @"})
+		public void validateWhenEquals(String password) throws BusinessException {
+			
+			boolean result = validator.comparePasswords(password, password);
+			
+			assertThat(result).isTrue();
+		}	
+		
+		@Test
+		@DisplayName("shoud throw exception when passwords are not the same")
+		public void validateWhenNotEquals() throws BusinessException {
+			String oldPassword = "password";
+			String newPassword = "pasSword";
+			
+			assertThatThrownBy(() -> validator.comparePasswords(oldPassword, newPassword))
+				.isInstanceOf(UserValidatorException.class)
+				.hasMessage(APIErrors.PASSWORDS_DO_NOT_MATCH.toString());
+		}
+	}
+	
 }

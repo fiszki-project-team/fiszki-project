@@ -34,7 +34,6 @@ public interface UserService {
 	 * 
 	 * @param dto - UserPasswordChangeDto that contains id, old and new password
 	 * @return true if success
-	 * @throws AuthValidatorException when user is not authenticated
 	 * @throws UserValidatorException when new password not valid
 	 * @throws InvalidIdException when invalid user id
 	 */
