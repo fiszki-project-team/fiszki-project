@@ -17,8 +17,8 @@ import com.fiszki.fiszkiproject.dtos.ErrorMessageDto;
 import com.fiszki.fiszkiproject.dtos.UserBasicInfoDto;
 import com.fiszki.fiszkiproject.dtos.UserNameChangeDto;
 import com.fiszki.fiszkiproject.dtos.UserPasswordChangeDto;
+import com.fiszki.fiszkiproject.exceptions.InvalidIdException;
 import com.fiszki.fiszkiproject.exceptions.UserValidatorException;
-import com.fiszki.fiszkiproject.exceptions.common.BusinessException;
 import com.fiszki.fiszkiproject.services.UserService;
 
 @RestController
@@ -52,13 +52,12 @@ public class UserController {
 	@PutMapping("/displayName")
 	public ResponseEntity<?> changeUserDisplayName(@RequestBody UserNameChangeDto dto) {
 		try {	
-			if (userService.changeDisplayName(dto)) {
-				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-			}
-			
+			userService.changeDisplayName(dto);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		} catch (InvalidIdException ie) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} catch (BusinessException e) {
-			ErrorMessageDto error = new ErrorMessageDto("UserValidatorException", e.getMessage());
+		} catch (UserValidatorException ue) {
+			ErrorMessageDto error = new ErrorMessageDto("UserValidatorException", ue.getMessage());
 			
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
@@ -67,15 +66,14 @@ public class UserController {
 	@PutMapping("/password")
 	public ResponseEntity<?> changeUserPassword(@RequestBody UserPasswordChangeDto dto) {
 		try {	
-			if (userService.changePassword(dto)) {
-				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-			}
-			
+			userService.changePassword(dto);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		} catch (InvalidIdException ie) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} catch (UserValidatorException e) {
+		} catch (UserValidatorException ue) {
 			String type = "UserValidatorException";
 			
-			ErrorMessageDto error = new ErrorMessageDto(type, e.getMessage());
+			ErrorMessageDto error = new ErrorMessageDto(type, ue.getMessage());
 			
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
