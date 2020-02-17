@@ -1,7 +1,6 @@
 package com.fiszki.fiszkiproject.services.impl;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,13 +40,9 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserBasicInfoDto getUserById(Long id) {
-		Optional<User> user = repository.findById(id);
+		User entity = repository.findByIdWithIdValidation(id);
 		
-		if (user.isPresent()) {
-			return mapper.mapToBasicInfo(user.get());
-		} else {
-			return null;
-		}
+		return mapper.mapToBasicInfo(entity);
 	}
 
 	@Override

@@ -42,11 +42,7 @@ public class UserController {
 	public ResponseEntity<?> returnSingleUser(@PathVariable Long id) {
 		UserBasicInfoDto user = userService.getUserById(id);
 		
-		if (user == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} else {
-			return new ResponseEntity<UserBasicInfoDto>(user, HttpStatus.OK);
-		}
+		return new ResponseEntity<UserBasicInfoDto>(user, HttpStatus.OK);
 	}
 	
 	@PutMapping("/displayName")
