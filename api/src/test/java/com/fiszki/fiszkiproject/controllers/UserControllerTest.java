@@ -57,7 +57,7 @@ public class UserControllerTest {
 
 			result.andExpect(status().isNotFound())
 					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-					.andExpect(jsonPath("$.type", is(APIErrorsTypes.VALIDATION_ERROR.toString())))
+					.andExpect(jsonPath("$.type", is(APIErrorsTypes.RESOURCE_NOT_FOUND.toString())))
 					.andExpect(jsonPath("$.message", is(APIErrors.USER_NOT_IN_DATABASE.toString())));
 		}
 
@@ -92,44 +92,49 @@ public class UserControllerTest {
 
 			result.andExpect(status().isNoContent());
 		}
-
+		
 		@Test
 		@DisplayName("should return 404 when user does not exist")
 		public void changeWithInvalidUserId() throws Exception {
 			dto = new UserNameChangeDto(-1L, "validName");
 			jsonContent = new ObjectMapper().writeValueAsString(dto);
+			
+			final ResultActions result = mockMvc.perform(put("/api/users/displayName")
+					.contentType(MediaType.APPLICATION_JSON).content(jsonContent));
 
-			final ResultActions result = mockMvc.perform(
-					put("/api/users/displayName").contentType(MediaType.APPLICATION_JSON).content(jsonContent));
-
-			result.andExpect(status().isNotFound());
+			result.andExpect(status().isNotFound())
+					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+					.andExpect(jsonPath("$.type", is(APIErrorsTypes.RESOURCE_NOT_FOUND.toString())))
+					.andExpect(jsonPath("$.message", is(APIErrors.USER_NOT_IN_DATABASE.toString())));
 		}
-
+		
 		@Test
 		@DisplayName("should return 400 when invalid display name")
 		public void changeToInvalidName() throws Exception {
 			dto = new UserNameChangeDto(1L, "aa");
 			jsonContent = new ObjectMapper().writeValueAsString(dto);
+			
+			final ResultActions result = mockMvc.perform(put("/api/users/displayName")
+					.contentType(MediaType.APPLICATION_JSON).content(jsonContent));
 
-			final ResultActions result = mockMvc.perform(
-					put("/api/users/displayName").contentType(MediaType.APPLICATION_JSON).content(jsonContent));
-
-			result.andExpect(status().isBadRequest()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
-					.andExpect(jsonPath("$.type", is("UserValidatorException")))
+			result.andExpect(status().isBadRequest())
+					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+					.andExpect(jsonPath("$.type", is(APIErrorsTypes.VALIDATION_ERROR.toString())))
 					.andExpect(jsonPath("$.message", is(APIErrors.DISPLAY_NAME_TOO_SHORT.toString())));
 		}
-
+		
 		@Test
 		@DisplayName("should return 400 when name already taken")
 		public void changeNameToAlradyTakenOne() throws Exception {
 			dto = new UserNameChangeDto(3L, "user_2");
 			jsonContent = new ObjectMapper().writeValueAsString(dto);
+			
+			final ResultActions result = mockMvc.perform(put("/api/users/displayName")
+					.contentType(MediaType.APPLICATION_JSON).content(jsonContent));
 
-			final ResultActions result = mockMvc.perform(
-					put("/api/users/displayName").contentType(MediaType.APPLICATION_JSON).content(jsonContent));
-
-			result.andExpect(status().isBadRequest()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
-					.andExpect(jsonPath("$.type", is("UserValidatorException")))
+			result.andExpect(status().isBadRequest())
+					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+					.andExpect(jsonPath("$.type", is(APIErrorsTypes.VALIDATION_ERROR.toString())))
 					.andExpect(jsonPath("$.message", is(APIErrors.DISPLAY_NAME_ALREADY_TAKEN.toString())));
 		}
 
@@ -153,17 +158,20 @@ public class UserControllerTest {
 
 			result.andExpect(status().isNoContent());
 		}
-
+		
 		@Test
 		@DisplayName("should return 404 when user does not exist")
 		public void changeWhenInvalidId() throws Exception {
 			dto = new UserPasswordChangeDto(23L, "test", "validPass1");
 			jsonContent = new ObjectMapper().writeValueAsString(dto);
+			
+			final ResultActions result = mockMvc.perform(put("/api/users/password")
+					.contentType(MediaType.APPLICATION_JSON).content(jsonContent));
 
-			final ResultActions result = mockMvc
-					.perform(put("/api/users/password").contentType(MediaType.APPLICATION_JSON).content(jsonContent));
-
-			result.andExpect(status().isNotFound());
+			result.andExpect(status().isNotFound())
+					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+					.andExpect(jsonPath("$.type", is(APIErrorsTypes.RESOURCE_NOT_FOUND.toString())))
+					.andExpect(jsonPath("$.message", is(APIErrors.USER_NOT_IN_DATABASE.toString())));
 		}
 
 		@ParameterizedTest
@@ -175,11 +183,12 @@ public class UserControllerTest {
 			dto = new UserPasswordChangeDto(3L, "test", parts[0]);
 			jsonContent = new ObjectMapper().writeValueAsString(dto);
 
-			final ResultActions result = mockMvc
-					.perform(put("/api/users/password").contentType(MediaType.APPLICATION_JSON).content(jsonContent));
-
-			result.andExpect(status().isBadRequest()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
-					.andExpect(jsonPath("$.type", is("UserValidatorException")))
+			final ResultActions result = mockMvc.perform(put("/api/users/password")
+							.contentType(MediaType.APPLICATION_JSON).content(jsonContent));
+			
+			result.andExpect(status().isBadRequest())
+					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+					.andExpect(jsonPath("$.type", is(APIErrorsTypes.VALIDATION_ERROR.toString())))
 					.andExpect(jsonPath("$.message", is(parts[1])));
 		}
 
@@ -190,11 +199,12 @@ public class UserControllerTest {
 			UserPasswordChangeDto dto = new UserPasswordChangeDto(1L, "test1", "validPass1");
 			jsonContent = new ObjectMapper().writeValueAsString(dto);
 
-			final ResultActions result = mockMvc
-					.perform(put("/api/users/password").contentType(MediaType.APPLICATION_JSON).content(jsonContent));
-
-			result.andExpect(status().isBadRequest()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
-					.andExpect(jsonPath("$.type", is("UserValidatorException")))
+			final ResultActions result = mockMvc.perform(put("/api/users/password")
+							.contentType(MediaType.APPLICATION_JSON).content(jsonContent));
+			
+			result.andExpect(status().isBadRequest())
+					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+					.andExpect(jsonPath("$.type", is(APIErrorsTypes.VALIDATION_ERROR.toString())))
 					.andExpect(jsonPath("$.message", is(APIErrors.PASSWORDS_DO_NOT_MATCH.toString())));
 		}
 	}

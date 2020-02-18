@@ -28,7 +28,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(InvalidIdException.class)
 	public final ResponseEntity<Object> handleUNFExceptions(InvalidIdException ex, WebRequest request) {
 		
-		ErrorMessageDto response = new ErrorMessageDto(APIErrorsTypes.VALIDATION_ERROR.toString(), ex.getMessage());
+		ErrorMessageDto response = new ErrorMessageDto(APIErrorsTypes.RESOURCE_NOT_FOUND.toString(), ex.getMessage());
 		
 		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 	}	
