@@ -87,8 +87,8 @@ public class UserControllerTest {
 			dto = new UserNameChangeDto(1L, "validName");
 			jsonContent = new ObjectMapper().writeValueAsString(dto);
 
-			final ResultActions result = mockMvc.perform(
-					put("/api/users/displayName").contentType(MediaType.APPLICATION_JSON).content(jsonContent));
+			final ResultActions result = mockMvc.perform(put("/api/users/1/display-name")
+					.contentType(MediaType.APPLICATION_JSON).content(jsonContent));
 
 			result.andExpect(status().isNoContent());
 		}
@@ -99,7 +99,7 @@ public class UserControllerTest {
 			dto = new UserNameChangeDto(-1L, "validName");
 			jsonContent = new ObjectMapper().writeValueAsString(dto);
 			
-			final ResultActions result = mockMvc.perform(put("/api/users/displayName")
+			final ResultActions result = mockMvc.perform(put("/api/users/1000/display-name")
 					.contentType(MediaType.APPLICATION_JSON).content(jsonContent));
 
 			result.andExpect(status().isNotFound())
@@ -114,7 +114,7 @@ public class UserControllerTest {
 			dto = new UserNameChangeDto(1L, "aa");
 			jsonContent = new ObjectMapper().writeValueAsString(dto);
 			
-			final ResultActions result = mockMvc.perform(put("/api/users/displayName")
+			final ResultActions result = mockMvc.perform(put("/api/users/1/display-name")
 					.contentType(MediaType.APPLICATION_JSON).content(jsonContent));
 
 			result.andExpect(status().isBadRequest())
@@ -129,7 +129,7 @@ public class UserControllerTest {
 			dto = new UserNameChangeDto(3L, "user_2");
 			jsonContent = new ObjectMapper().writeValueAsString(dto);
 			
-			final ResultActions result = mockMvc.perform(put("/api/users/displayName")
+			final ResultActions result = mockMvc.perform(put("/api/users/3/display-name")
 					.contentType(MediaType.APPLICATION_JSON).content(jsonContent));
 
 			result.andExpect(status().isBadRequest())
@@ -154,7 +154,7 @@ public class UserControllerTest {
 			jsonContent = new ObjectMapper().writeValueAsString(dto);
 
 			final ResultActions result = mockMvc
-					.perform(put("/api/users/password").contentType(MediaType.APPLICATION_JSON).content(jsonContent));
+					.perform(put("/api/users/1/password").contentType(MediaType.APPLICATION_JSON).content(jsonContent));
 
 			result.andExpect(status().isNoContent());
 		}
@@ -165,7 +165,7 @@ public class UserControllerTest {
 			dto = new UserPasswordChangeDto(23L, "test", "validPass1");
 			jsonContent = new ObjectMapper().writeValueAsString(dto);
 			
-			final ResultActions result = mockMvc.perform(put("/api/users/password")
+			final ResultActions result = mockMvc.perform(put("/api/users/23/password")
 					.contentType(MediaType.APPLICATION_JSON).content(jsonContent));
 
 			result.andExpect(status().isNotFound())
@@ -183,7 +183,7 @@ public class UserControllerTest {
 			dto = new UserPasswordChangeDto(3L, "test", parts[0]);
 			jsonContent = new ObjectMapper().writeValueAsString(dto);
 
-			final ResultActions result = mockMvc.perform(put("/api/users/password")
+			final ResultActions result = mockMvc.perform(put("/api/users/3/password")
 							.contentType(MediaType.APPLICATION_JSON).content(jsonContent));
 			
 			result.andExpect(status().isBadRequest())
@@ -199,7 +199,7 @@ public class UserControllerTest {
 			UserPasswordChangeDto dto = new UserPasswordChangeDto(1L, "test1", "validPass1");
 			jsonContent = new ObjectMapper().writeValueAsString(dto);
 
-			final ResultActions result = mockMvc.perform(put("/api/users/password")
+			final ResultActions result = mockMvc.perform(put("/api/users/1/password")
 							.contentType(MediaType.APPLICATION_JSON).content(jsonContent));
 			
 			result.andExpect(status().isBadRequest())

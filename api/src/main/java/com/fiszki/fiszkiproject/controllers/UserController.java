@@ -42,15 +42,17 @@ public class UserController {
 		return new ResponseEntity<UserBasicInfoDto>(user, HttpStatus.OK);
 	}
 	
-	@PutMapping("/displayName")
-	public ResponseEntity<?> changeUserDisplayName(@RequestBody UserNameChangeDto dto) {
+	@PutMapping("/{id}/display-name")
+	public ResponseEntity<?> changeUserDisplayName(@PathVariable Long id, @RequestBody UserNameChangeDto dto) {
+		dto.setId(id);
 		userService.changeDisplayName(dto);
 		
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	
-	@PutMapping("/password")
-	public ResponseEntity<?> changeUserPassword(@RequestBody UserPasswordChangeDto dto) {
+	@PutMapping("/{id}/password")
+	public ResponseEntity<?> changeUserPassword(@PathVariable Long id, @RequestBody UserPasswordChangeDto dto) {
+		dto.setId(id);
 		userService.changePassword(dto);
 		
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
